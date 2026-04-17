@@ -55,3 +55,42 @@ SELECT
 FROM sales_data
 GROUP BY WeekOfYear
 ORDER BY WeekOfYear;
+
+
+--CTE
+CREATE TABLE monthly_sales_final AS
+
+WITH base AS (
+    SELECT 
+        Year,
+        Month,
+        SUM(Sales) AS total_sales
+    FROM sales_data
+    GROUP BY Year, Month
+)
+
+SELECT 
+    Year,
+    Month,
+    total_sales,
+
+    -- Running total
+    SUM(total_sales) OVER (ORDER BY Year, Month) AS running_total,
+
+    -- Moving average
+    AVG(total_sales) OVER (
+        ORDER BY Year, Month
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ) AS moving_avg_3,
+
+    -- Growth %
+    ROUND(
+        (
+            (total_sales - LAG(total_sales) OVER (ORDER BY Year, Month))
+            / LAG(total_sales) OVER (ORDER BY Year, Month)
+        )::NUMERIC * 100,
+        2
+    ) AS growth_pct
+
+FROM base
+ORDER BY Year, Month;
