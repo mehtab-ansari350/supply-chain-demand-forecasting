@@ -7,7 +7,6 @@ import numpy as np
 
 def load_data():
     df = pd.read_csv("data/aggregated/monthly_sales.csv")
-
     return df
 
 
@@ -22,31 +21,27 @@ def prepare_data(df):
     # Set index
     df.set_index('ds', inplace=True)
 
-    # Fix frequency warning (important)
+    # Fix frequency (important for time series)
     df.index = pd.DatetimeIndex(df.index).to_period('M').to_timestamp()
 
-    # Target variable
     ts = df['total_sales'].astype(float)
 
     return ts
 
 
 def train_model(ts):
-    # Split data (train/test)
     train_size = int(len(ts) * 0.8)
     train, test = ts[:train_size], ts[train_size:]
 
-    # Improved ARIMA order
     model = ARIMA(train, order=(1, 1, 2))
     model_fit = model.fit()
 
-    # Forecast on test set
     predictions = model_fit.forecast(steps=len(test))
 
-    # RMSE
     rmse = np.sqrt(mean_squared_error(test, predictions))
-    print("RMSE:", rmse)
+    print("ARIMA RMSE:", rmse)
 
+    # Save test vs predicted
     results_df = pd.DataFrame({
         "Date": test.index,
         "Actual": test.values,
@@ -55,20 +50,27 @@ def train_model(ts):
 
     os.makedirs("outputs/predictions", exist_ok=True)
     results_df.to_csv("outputs/predictions/arima_test_vs_pred.csv", index=False)
+
     return model_fit, rmse
 
 
-def forecast(model_fit):
-    forecast = model_fit.forecast(steps=12)
-    return forecast
+def forecast(model_fit, ts, steps=12):
+    forecast_values = model_fit.forecast(steps=steps)
+
+    # Create future dates
+    last_date = ts.index[-1]
+    future_dates = pd.date_range(start=last_date, periods=steps+1, freq='MS')[1:]
+
+    forecast_df = pd.DataFrame({
+        "Date": future_dates,
+        "Forecast": forecast_values.values
+    })
+
+    return forecast_df
 
 
-def save_output(forecast):
+def save_output(forecast_df):
     os.makedirs("outputs/predictions", exist_ok=True)
-
-    forecast_df = forecast.reset_index()
-    forecast_df.columns = ['Date', 'Forecast']
-
     forecast_df.to_csv("outputs/predictions/arima_forecast.csv", index=False)
 
 
@@ -79,17 +81,22 @@ def save_metrics(rmse):
         f.write(f"RMSE: {rmse}")
 
 
-if __name__ == "__main__":
+#  IMPORTANT: Pipeline function
+def run_arima_model():
     df = load_data()
     ts = prepare_data(df)
 
     model_fit, rmse = train_model(ts)
 
-    forecast_values = forecast(model_fit)
+    forecast_df = forecast(model_fit, ts)
 
-    print("\nForecast:\n", forecast_values)
-
-    save_output(forecast_values)
+    save_output(forecast_df)
     save_metrics(rmse)
 
-    print("\nARIMA Model Completed ")
+    return rmse
+
+
+# Clean main execution
+if __name__ == "__main__":
+    rmse = run_arima_model()
+    print(f"\nARIMA Model Completed | RMSE: {rmse}")
