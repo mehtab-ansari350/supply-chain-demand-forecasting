@@ -1,82 +1,169 @@
-# 📦 Supply Chain Demand Forecasting
-
-## 📌 Project Overview
-
-This project focuses on forecasting monthly sales in a retail supply chain using time series techniques. The goal is to predict future demand and compare traditional statistical models with deep learning approaches.
+# Supply Chain Demand Forecasting & Analytics
 
 ---
 
-## 🎯 Objectives
+##  Project Overview
 
-* Perform data aggregation using SQL
-* Build time series forecasting models
-* Compare ARIMA and LSTM performance
-* Evaluate models using RMSE and MAE
-* Generate future sales forecasts
+This project delivers an **end-to-end supply chain forecasting pipeline** to predict future monthly sales and support data-driven decision-making.
+
+It combines **SQL-based data engineering**, **time series modeling**, and **business intelligence dashboards** to simulate a real-world analytics workflow used in enterprise environments.
 
 ---
 
-## 🛠️ Tech Stack
+##  Business Problem
 
-* Python (Pandas, NumPy)
-* SQL (PostgreSQL)
-* Statsmodels (ARIMA)
-* TensorFlow / Keras (LSTM)
-* Scikit-learn (RMSE, MAE)
+Accurate demand forecasting is critical for:
 
----
+* Inventory optimization
+* Reducing stockouts and overstocking
+* Improving supply chain efficiency
 
-## 📊 Data Pipeline
+This project aims to:
 
-1. Raw sales data stored in database
-2. SQL transformations performed:
-
-   * Monthly sales aggregation
-   * Running total
-   * Moving average (3-month)
-   * Growth percentage
-3. Exported processed data as CSV
-4. Used for model training
+* Forecast future demand
+* Compare multiple forecasting techniques
+* Provide actionable insights through dashboards
 
 ---
 
-## 🤖 Models Implemented
+##  Data Source
 
-### 1. ARIMA Model
+The project uses a **retail transactional dataset** representing historical sales activity across multiple time periods.
 
-* Order: (1,1,2)
-* Used as baseline forecasting model
-* Best performing model
+### 🔹 Raw Data
 
-### 2. LSTM Model
+* Transaction-level sales records
+* Includes attributes such as:
 
-* Sequence length: 3
-* Deep learning approach
-* Used for comparison
+  * Order date
+  * Sales amount
+  * Product-level details
 
----
+### 🔹 Data Processing Flow
 
-## 📈 Model Evaluation
+* Raw data stored in structured format
+* SQL transformations applied:
 
-| Model | RMSE | MAE |
-| ----- | ---- | --- |
-| ARIMA | ~12M | ~9M |
-| LSTM  | ~17M | -   |
-
-👉 ARIMA performed better due to structured and limited dataset.
+  * Monthly aggregation
+  * Moving averages
+  * Growth percentage
+* Processed dataset exported for modeling
 
 ---
 
-## 🔄 How to Run
+##  Processed Dataset
 
-```bash
-pip install -r requirements.txt
-python main.py
+The final dataset used for modeling is **monthly aggregated sales data**.
+
+### 🔹 Key Features
+
+* **year** → Year of transaction
+* **month** → Month of transaction
+* **total_sales** → Total revenue for the month
+
+Stored at:
+
+```
+data/aggregated/monthly_sales.csv
 ```
 
 ---
 
-## 📂 Project Structure
+##  End-to-End Pipeline
+
+### 1. Data Engineering (SQL)
+
+* Raw transactional data processed using SQL
+* Key transformations:
+
+  * Monthly sales aggregation
+  * Moving averages (3-month)
+  * Growth percentage calculation
+* Output stored for modeling
+
+---
+
+### 2. Data Processing (Python)
+
+* Data cleaning and transformation using modular scripts
+* Time series preparation:
+
+  * Datetime indexing
+  * Sorting and validation
+  * Feature readiness for models
+
+---
+
+### 3. Modeling
+
+#### 🔹 ARIMA Model
+
+* Configuration: (1,1,2)
+* Statistical time series model
+* Captures trend and seasonality efficiently
+
+#### 🔹 LSTM Model
+
+* Deep learning approach
+* Sequence length: 3
+* Captures temporal dependencies
+
+---
+
+### 4. Model Evaluation
+
+| Model | RMSE    |
+| ----- | ------- |
+| ARIMA | ~12.01M |
+| LSTM  | ~17.47M |
+
+**Key Insight:**
+ARIMA outperforms LSTM due to structured and relatively small dataset.
+
+---
+
+### 5. Forecasting
+
+* Generated next **12 months sales forecast**
+* Saved outputs for business and visualization
+
+---
+
+### 6. Business Intelligence Dashboard (Power BI)
+
+The dashboard provides:
+
+* Actual vs Predicted comparison
+* Future sales forecast
+* Monthly sales trend
+* Model performance comparison (RMSE)
+* Final model selection insight
+
+**Final Decision:**
+ARIMA selected as production model based on lower RMSE
+
+---
+
+##  Tech Stack
+
+### Programming & Libraries
+
+* Python (Pandas, NumPy)
+* Scikit-learn (Evaluation metrics)
+* Statsmodels (ARIMA)
+* TensorFlow / Keras (LSTM)
+
+### Data Engineering
+
+* SQL (PostgreSQL)
+
+### Visualization
+
+* Power BI
+
+---
+
+##  Project Structure
 
 ```
 supply_chain_forecasting/
@@ -86,20 +173,30 @@ supply_chain_forecasting/
 │   ├── processed/
 │   └── aggregated/
 │
+├── notebooks/
+│   ├── 01_eda.ipynb
+│   └── 02_feature_engineering.ipynb
+│
 ├── src/
+│   ├── data_processing/
+│   │   ├── clean_data.py
+│   │   └── transform_data.py
+│   │
 │   ├── models/
 │   │   ├── arima_model.py
 │   │   ├── lstm_model.py
 │   │   └── evaluate.py
 │   │
 │   ├── sql/
+│   │   ├── create_tables.sql
+│   │   ├── transformations.sql
 │   │   └── aggregations.sql
 │
 ├── outputs/
 │   ├── predictions/
 │   └── metrics/
 │
-├── dashboard/
+├── dashboard/powerbi/image.png
 │
 ├── main.py
 ├── requirements.txt
@@ -108,26 +205,53 @@ supply_chain_forecasting/
 
 ---
 
-## 📊 Outputs Generated
+##  How to Run
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run full pipeline
+python main.py
+```
+
+---
+
+##  Outputs
 
 * Model predictions (ARIMA & LSTM)
-* Forecast data for future months
-* Model comparison (RMSE)
+* Forecast for next 12 months
+* Model comparison metrics
+* Power BI dashboard insights
 
 ---
 
-## 🚀 Key Learnings
+##  Key Learnings
 
-* Time series forecasting using ARIMA and LSTM
-* Model comparison and evaluation
-* SQL-based feature engineering
-* End-to-end ML pipeline development
+* Built complete **data science pipeline (SQL → ML → BI)**
+* Compared **statistical vs deep learning models**
+* Learned when simpler models outperform complex ones
+* Designed **business-ready dashboards**
+* Structured project like real-world production systems
 
 ---
 
-## 🔮 Future Improvements
+##  Future Improvements
 
-* Hyperparameter tuning (SARIMA)
-* Add external features (holidays, promotions)
-* Deploy model as API
-* Build interactive dashboard (Power BI/Tableau)
+* Implement SARIMA for seasonality handling
+* Add external features (holidays, promotions, events)
+* Automate pipeline using workflow tools
+* Deploy model as API (FastAPI / Flask)
+* Integrate real-time dashboard updates
+
+---
+
+##  Conclusion
+
+This project demonstrates a **production-style data science workflow**, combining:
+
+* Data engineering
+* Machine learning
+* Business analytics
+
+to deliver actionable insights for supply chain optimization.
