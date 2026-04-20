@@ -1,5 +1,7 @@
 # Supply Chain Demand Forecasting & Analytics
 
+ ![Dashboard](dashboard/dashboard.png)
+
 ---
 
 ##  Project Overview
