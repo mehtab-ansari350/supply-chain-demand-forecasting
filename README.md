@@ -1,6 +1,6 @@
 # Supply Chain Demand Forecasting & Analytics
 
- ![Dashboard](dashboard/dashboard.png)
+ ![Dashboard](image.png)
 
 ---
 
